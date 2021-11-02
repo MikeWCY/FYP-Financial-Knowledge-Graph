@@ -49,7 +49,6 @@ class Question():
                 st.markdown("### " + nl + " acted in ")
                 self.runMovieQuery()
 
-
     def runMovieQuery(self):
         c_result = graph.run(self.query)
         l_result = []
@@ -59,7 +58,6 @@ class Question():
                 st.markdown(c_result.current[0]["title"])
         if len(l_result) == 0:
             st.write("No result")
-
 
 
 if __name__ == "__main__":
