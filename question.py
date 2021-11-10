@@ -39,9 +39,35 @@ class Question():
                     entity = c
                     entityType = k
                     break
-                
         #print([sent, entity, entityType, pattern])
         return [entity, entityType, pattern]
+
+    @staticmethod
+    def find_all_entities(data, sent):
+        entity_ls = []
+        entityType_ls = []
+        start_pos = []
+        end_pos = []
+        pattern = sent
+        words = sent.split(" ")
+        for k in data.keys():
+            if k in sent:
+                entity_ls.append(k)
+                entityType_ls.append(k)
+            for c in data[k]:
+                if c in sent:
+                    entity_ls.append(c)
+                    entityType_ls.append(k)
+                    pattern = sent.replace(c, k)
+        while len(start_pos) < len(entity_ls):
+            for i in range(len(words)):
+                for j in range(i + 1, len(words) + 1):
+                    blank = " "
+                    sub = blank.join(words[i:j])
+                    if sub in entity_ls:
+                        start_pos.append(i)
+                        end_pos.append(j)
+        return [entity_ls, entityType_ls, pattern, start_pos, end_pos]
 
     @staticmethod
     def match_pattern(df, entity, entityType, pattern):
@@ -77,13 +103,11 @@ class Question():
         if depth > 2:
             return [None, None, None]
         word_ls = sent.split(" ")
+        blank = " "
         for i in range(len(word_ls)):
             for j in range(i + 1, len(word_ls) + 1):
                 sub = word_ls[i:j]
-                subq = word_ls[i]
-                for k in range(1, j - i):
-                    subq = subq + " " + sub[k]
-                print(subq)
+                subq = blank.join(sub)
                 [entity, entityType, pattern] = self.get_entityType(self.data, subq)
                 if entity ==  None or entityType == None or pattern == None:
                     continue
@@ -92,14 +116,6 @@ class Question():
                     continue
                 newsent = sent.replace(subq, answerType)
                 newsent_ls = newsent.split(" ")
-                '''
-                if "Bank of China (Hong Kong)" or "<Institution>" in subq:
-                    print(newsent)
-                    print(self.get_entityType(self.data, newsent))
-                    print(self.match_pattern(self.df, "<Institution>", "<Institution>", newsent))
-                    print(len(newsent_ls))
-                    print("-" * 60)
-                '''
                 if len(newsent_ls) == 1 or self.question_decomposition(newsent, depth + 1) != [None, None, None]:
                     self.decomposed_qs.append(subq)
                     self.query_ls.append(query)
@@ -120,15 +136,53 @@ class Question():
         return self.result
 
     def run_complex(self):
+        self.decomposed_qs = []
+        self.query_ls = []
         self.question_decomposition(self.sent, 0)
-        print("Decomposed:", self.decomposed_qs)
-        print("query", self.query_ls)
         result = []
         for i in range(len(self.decomposed_qs) - 1, -1, -1):
-            print(i, self.query_ls[i])
             r = self.run_query(self.query_ls[i])
-            print(r)
-            print("-"*40)
+            result.append(r)
+            if i > 0 :
+                for j in r:
+                    self.query_ls[i - 1] = self.query_ls[i - 1].replace(self.answerType_ls[i], j)
+        if len(result) == 0:
+            return "no result"
+        else:
+            return result[-1]
+
+    def type_question_decomposition(self, sent, depth):
+        if depth > 2:
+            return [None, None]
+        [entity_ls, entityType_ls, pattern, start_pos, end_pos] = self.find_all_entities(self.data, sent)
+        words = sent.split(" ")
+        blank = " "
+        for i in range(end_pos[-1]):
+            for index in range(len(entity_ls)):
+                if start_pos[index] >= i:
+                    break
+            for k in range(end_pos[index], len(words)):
+                sub = blank.join(words[i:k + 1])
+                pattern = sub.replace(entity_ls[index], entityType_ls[index])
+                [query, answerType] = self.match_pattern(self.df, entity_ls[index], entityType_ls[index], pattern)
+                if [query, answerType] == [None,  None]:
+                    continue
+                newsent = sent.replace(sub, answerType)
+                newsent_ls = newsent.split(" ")
+                if len(newsent_ls) == 1 or self.type_question_decomposition(newsent, depth + 1) != [None, None]:
+                    self.decomposed_qs.append(sub)
+                    self.query_ls.append(query)
+                    self.answerType_ls.append(answerType)
+                    return [self.decomposed_qs, self.query_ls]
+        return [None, None]
+
+    def run_complex_type(self):
+        self.decomposed_qs = []
+        self.query_ls = []
+        self.type_question_decomposition(self.sent, 0)
+        result = []
+        for i in range(len(self.decomposed_qs) - 1, -1, -1):
+            r = self.run_query(self.query_ls[i])
             result.append(r)
             if i > 0 :
                 for j in r:
