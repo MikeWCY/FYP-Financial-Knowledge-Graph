@@ -1,64 +1,35 @@
+from question import Question
 import streamlit as st
-from py2neo import Graph
 
 
-st.write("# Welcome to FiGo!")
-graph = Graph("bolt://localhost:7687", auth=("neo4j", "123456"))
-if graph:
-    st.write("Connected")
-else:
-    st.write("Connection error")
-
-class Question():
+class Page():
     def __init__(self):
-        st.sidebar.markdown("# Question type")
-        self.option = st.sidebar.selectbox("",["Prepared", "Natural Language"])
+        func_list = ["Simple Question", "Complex Question"]
+        function = st.sidebar.selectbox("Ask a Question", func_list)
+        self.qa = Question("")
+        if function == func_list[0]:
+            self.simple_page()
+        else:
+            self.complex_page()
 
-        c_sp = graph.run("MATCH (p: Person) RETURN p")
-        l_sp = []
-        while c_sp.forward():
-            if c_sp.current[0]:
-                l_sp.append(c_sp.current[0]["name"])
-        self.l_sp = l_sp
+    def simple_page(self):
+        st.header("This part supports the user to ask a simple question or a combinaiton of simple questions")
+        num = st.number_input("Select the number of conditions for your question", value=1, step=1, format="%d")
+        sq_ls = [""]*num
+        for i in range(num):
+            st.write("Question " + str(i + 1))
+            sq_ls[i] = st.text_input("", key=i)
+        if st.button("Confirm all the questions"):
+            for i in range(num):
+                self.qa.sent = sq_ls[i]
+                result = self.qa.run_simple()
+            st.write(result)
 
-        if self.option == "Prepared":
-            self.queryPrepared()
-        elif self.option == "Natural Language":
-            self.queryNL()
-
-    def collectQuestion(self):
-        q = st.text_input("Please input your question here")
-        if st.button("Confirm"):
-            self.q = q
-            self.runQuery()
-
-    def queryPrepared(self):
-        sp = st.selectbox("Person", self.l_sp)
-        st.write("ACTED_IN")
-        s = st.selectbox("", ["Movie"])
-        if st.button("Confirm"):
-            if sp != None:
-                self.query = "MATCH (p: Person {name:'" + sp + "'})-[rel: ACTED_IN]-(m: Movie) RETURN m;"
-                self.runMovieQuery()
-
-    def queryNL(self):
-        nl = st.text_input("")
-        if st.button("Confirm"):
-            if nl in self.l_sp:
-                self.query = "MATCH (p: Person {name:'" + nl + "'})-[rel: ACTED_IN]-(m: Movie) RETURN m;"
-                st.markdown("### " + nl + " acted in ")
-                self.runMovieQuery()
-
-    def runMovieQuery(self):
-        c_result = graph.run(self.query)
-        l_result = []
-        while c_result.forward():
-            if c_result.current[0]:
-                l_result.append(c_result.current[0]["title"])
-                st.markdown(c_result.current[0]["title"])
-        if len(l_result) == 0:
-            st.write("No result")
+    
+    def complex_page(self):
+        st.header("This part supports the user to ask a complex question")
+        cq = st.text_area("Please input your complex question")
 
 
 if __name__ == "__main__":
-    Demo = Question()
+    Page()
