@@ -167,6 +167,15 @@ class Question():
         result = self.connect.run()
         return result
 
+    def clear_result(self, result):
+        ls = []
+        try:
+            for r in result:
+                ls.append(r['o']['name'])
+        except KeyError:
+            ls.append(result)
+        return ls
+
     def run_simple(self):
         [self.entity, self.entityType, s, self.pattern] = self.get_entityType(self.data, self.sent)      
         [self.query, self.answerType] = self.match_pattern(self.df, self.entity, self.entityType, self.pattern)
@@ -181,20 +190,29 @@ class Question():
         self.decomposed_qs = []
         self.query_ls = []
         self.question_decomposition(self.sent, 0)
-        result = []
         print("D:", self.decomposed_qs)
-        for i in range(len(self.decomposed_qs) - 1, -1, -1):
-            r = self.run_query(self.query_ls[i])
+        self.result = self.run_decomposed(self.query_ls, self.answerType_ls)
+        return self.result
+
+    def run_decomposed(self, query_ls, answerType_ls):
+        result = []
+        for i in range(len(query_ls) - 1, -1, -1):
+            r = self.run_query(query_ls[i])
+            r = self.clear_result(r)
             if r == None:
                 return "no result"
             result.append(r)
             if i > 0:
                 for j in r:
-                    self.query_ls[i - 1] = self.query_ls[i - 1].replace(self.answerType_ls[i], j)
+                    self.query_ls[i - 1] = query_ls[i - 1].replace(answerType_ls[i], j)
         if len(result) == 0:
             return "no result"
         else:
             return result[-1]
+
+
+
+
 
     def type_question_decomposition(self, sent, depth):
         if depth > 2:
