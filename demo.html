@@ -4,37 +4,23 @@
     <meta charset="utf-8" />
     <title>Graph</title>
     <body>
-        <!-- 为 ECharts 准备一个定义了宽高的 DOM -->
         <div id="main" style="width: 600px;height:400px;"></div>
         <script type="text/javascript">
-            var searchResult = ##variable##;
             var myChart = echarts.init(document.getElementById('main'));
             
             var data = [];
             var links = [];
 
-            var node1 = [];
-            var node2 = [];
-
-            for (var i = 0; i < searchResult.length; i++) {
-                var n1 = searchResult[i]['entity1']['name'];
-                if (!node1.includes(n1)) {
-                    node1.push(n1);
-                }
-                var n2 = searchResult[i]['entity2']['name'];
-                if (!node2.includes(n2)) {
-                    node2.push(n2);
-                }
-            }
-            if (node1.length <= node2.length) {
-                for (var i = 0; i < node1.length; i++) {
-                    var xcord = 300;
-                    var ycord = 300;
-                    data.push({name: node1[i],
-                        x: xcord,
-                        y: ycord
-                    });
-                }
+            var node1 = ##node1##;
+            var node2 = ##node2##;
+            
+            if (node1.length == 1) {
+                var xcord = 300;
+                var ycord = 300;
+                data.push({name: node1[0],
+                    x: xcord,
+                    y: ycord
+                });
                 for (var i = 0; i < node2.length; i++) {
                     var radian = 2 * Math.PI / node2.length * i;
                     var xcord = 300 + 200 * Math.cos(radian);
@@ -50,14 +36,12 @@
                 }
             }
             else {
-                for (var i = 0; i < node2.length; i++) {
-                    var xcord = 300;
-                    var ycord = 300;
-                    data.push({name: node2[i],
-                        x: xcord,
-                        y: ycord
-                    });
-                }
+                var xcord = 300;
+                var ycord = 300;
+                data.push({name: node2[0],
+                    x: xcord,
+                    y: ycord
+                });
                 for (var i = 0; i < node1.length; i++) {
                     var randian = Math.PI / node1.length * i;
                     var xcord = 300 + 200 * Math.cos(randian);
@@ -72,7 +56,6 @@
                     });
                 }
             }
-
             var option = {
                 title: {
                     text: 'Graph'
@@ -105,8 +88,6 @@
                 }
             ]
             };
-    
-          // 使用刚指定的配置项和数据显示图表。
           myChart.setOption(option);
         </script>
       </body>
