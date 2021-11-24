@@ -1,3 +1,4 @@
+from streamlit.caching import clear_cache
 from graph import Connect
 import textdistance
 import pandas as pd
@@ -120,15 +121,18 @@ class Question():
                 min_distance = distance
                 min_index = j
             #print(pattern_ls[j], distance)
+        
         if min_distance == 1000 and min_index == -1:
             return [None, None]
-        elif min_distance < 8:
-            matched_pattern = pattern_ls[min_index]
-            query = lquery_ls[min_index] + entity + rquery_ls[min_index]
-            answerType = answerType_ls[min_index]
-            return [query, answerType]
-        else:
-            return [None, None]
+        else: 
+            max_similarity = 1 - min_distance / max(len(pattern), len(pattern_ls[min_index]))
+            if max_similarity > 0.8:
+                matched_pattern = pattern_ls[min_index]
+                query = lquery_ls[min_index] + entity + rquery_ls[min_index]
+                answerType = answerType_ls[min_index]
+                return [query, answerType]
+            else:
+                return [None, None]
 
     def question_decomposition(self, sent, depth):
         if depth > 2:
@@ -173,14 +177,14 @@ class Question():
             for r in result:
                 ls.append(r['o']['name'])
         except KeyError:
-            ls.append(result)
+            ls = list(result[0].values())
         return ls
 
     def run_simple(self):
         [self.entity, self.entityType, s, self.pattern] = self.get_entityType(self.data, self.sent)      
         [self.query, self.answerType] = self.match_pattern(self.df, self.entity, self.entityType, self.pattern)
         #print(self.pattern)
-        self.result = self.run_query(self.query)
+        self.result = self.clear_result(self.run_query(self.query))
         if self.result == None:
             return "no result"
         else:
