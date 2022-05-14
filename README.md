@@ -15,7 +15,12 @@ Members:
 ├── crawler
 ├── data processing
 ├── knowledge graph construction
+├── models
+├── ├── TrainClassifier
+├── ├── ├── generate_embeds.py
+├── ├── ├──trainclassifier.py
 └── interface
+
 ```
 
 # 0. Configuration
