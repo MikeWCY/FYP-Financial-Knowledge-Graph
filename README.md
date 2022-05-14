@@ -15,22 +15,18 @@ Members:
 ├── crawler
 ├── data processing
 ├── knowledge graph construction
-├── models
-├── ├── TrainClassifier
-├── ├── ├── generate_embeds.py
-├── ├── ├──trainclassifier.py
 └── interface
-
 ```
 
 # 0. Configuration
+├── database: neo4j
+├── 
+# 1. crawler
 
-# 1. Data collection
+# 2. data
 
-# 2. Data processing
+# 3. data processor
 
-# 3. knowledge graph construction
+# 4. FYP-main
 
-# 4. Question parsing
-
-# 5. Interface Design
+# 5. models
