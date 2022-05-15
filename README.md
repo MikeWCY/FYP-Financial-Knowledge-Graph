@@ -12,6 +12,7 @@ Members:
 # Structure
 ```
 .
+├── equirement.txt
 ├── crawler
 ├── ├── scrapy_wikicategory  # get entities pages from wikidata category lists and crawl wikipedia pages
 ├── ├── orgRelation # get 9319 triple entity-relation-entity list from wikidata
