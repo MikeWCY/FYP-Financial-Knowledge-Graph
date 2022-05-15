@@ -50,7 +50,7 @@ Members:
 # 1. crawler
 1.1 scrapy_wikicategory
 1.1.1 Package installed:
-  numpy, scrapy, tqdm, lxml
+## numpy, scrapy, tqdm, lxml
 1.1.2 conselor:
   get entities and their wikipages starting from  "https://en.wikipedia.org/wiki/Category:Banks_of_China"
   queue1.py: add original request and start the queue to crawl
