@@ -43,12 +43,12 @@ Members:
 ```
 
 # 0. Configuration
-## database: neo4j
-## IDE: PyCharm
-## anaconda
-## jupyter notebook
-## package: 
-### $pip install -r requirement.txt
+#### database: neo4j
+#### IDE: PyCharm
+#### anaconda
+#### jupyter notebook
+#### package: 
+###### $pip install -r requirement.txt
 # 1. crawler
 ## 1.1 scrapy_wikicategory
 ### 1.1.1 Package installed:
