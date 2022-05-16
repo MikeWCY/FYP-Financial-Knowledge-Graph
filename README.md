@@ -44,6 +44,7 @@ Members:
 
 # 0. Configuration
 #### database: neo4j
+#### language: python3
 #### IDE: PyCharm
 #### anaconda
 #### jupyter notebook
