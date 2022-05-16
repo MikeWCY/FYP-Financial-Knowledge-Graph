@@ -49,8 +49,7 @@ Members:
 #### anaconda
 #### jupyter notebook
 #### package: 
-$pip install -r requirement.txt\
-test
+$pip install -r requirement.txt
 # 1. crawler
 ## 1.1 scrapy_wikicategory
 ### 1.1.1 Package installed:
