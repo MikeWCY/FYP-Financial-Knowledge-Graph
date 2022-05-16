@@ -107,3 +107,7 @@ Members:
 #### bert-ner.ipynb: numeric ner model based on bert-base
 #### sec-ber-simple.ipynb: numeric ner model based on sec-bert trained with small anount of data
 ## 5.3 TrainClassifier
+### 5.3.1 generate_embeds.py
+This file is used to generate the embeddings of the tokens in the training and validation sets. The vast majority of the tokens are labeled as 0. To reduce the training burden, the code is to select a small fraction of the tokens labeled 0 while preserving all tokens labeled otherwise. 
+### 5.3.2 trainclassifier.py
+This file is to train a logistic regression classifier given the embeddings generated in generate_embeds.py on the training set. A classification report is generated to show the performance of the classifier on the validation set. 
